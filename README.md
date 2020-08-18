@@ -1,7 +1,11 @@
 # How to use 
 Of course, you need Docker installed! 
 
-As an example, `setup_phpBB3.sh` sets up phpBB3 😊
+```shell script
+docker-compose up -d
+```
+
+As an example, `setup_phpBB3.sh` downloads and sets up phpBB3 😊
 
 Some notes: 
 - URLS: 
