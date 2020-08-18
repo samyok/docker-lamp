@@ -1,0 +1,75 @@
+version: "3.8"
+services:
+  # dozzle:
+  #   image: amir20/dozzle:latest
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   ports:
+  #     - 9999:8080
+  #   container_name: dozzle
+  #   restart: always
+  php:
+    build:
+      context: './php/'
+      args:
+        PHP_VERSION: ${PHP_VERSION}
+    networks:
+      - backend
+    volumes:
+      - ${PROJECT_ROOT}/:/var/www/html/
+    container_name: php
+    restart: always
+  apache:
+    build:
+      context: './apache/'
+      args:
+        APACHE_VERSION: ${APACHE_VERSION}
+    depends_on:
+      - php
+      - db
+    networks:
+      - frontend
+      - backend
+    ports:
+      - 8080:80
+    volumes:
+      - ${PROJECT_ROOT}/:/var/www/html/
+    container_name: apache
+    restart: always
+  db:
+    image: mysql:${MYSQL_VERSION}
+    container_name: db
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - frontend
+      - backend
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8181:80
+    networks:
+      - frontend
+      - backend
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      ## comment out these two lines if you want to be able to select which user to login as
+      PMA_USER: ${DB_USERNAME}
+      PMA_PASSWORD: ${DB_PASSWORD}
+      ## uncomment the below two lines if you would rather always manage all databases as root
+      # PMA_USER: root
+      # PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+
+networks:
+  frontend:
+  backend:
+volumes:
+  db_data: {}

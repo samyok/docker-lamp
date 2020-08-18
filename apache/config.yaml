@@ -1,0 +1,3 @@
+hostname: test-docker-container.samyok.us
+url: http://localhost:80
+logfile: ./cloudflared.log
